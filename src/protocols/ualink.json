@@ -1,0 +1,16 @@
+{
+  "id": "ualink",
+  "name": "UaLink",
+  "label": "UaLink",
+  "desc": "UaLink 协议报文格式",
+  "hex": "C3201000",
+  "schema": [
+    {"name": "Version", "bits": 4, "desc": "版本号"},
+    {"name": "LinkType", "bits": 2, "desc": "链路类型"},
+    {"name": "RSV", "bits": 2, "desc": "保留字段"},
+    {"name": "Opcode", "bits": 6, "desc": "操作码"},
+    {"name": "Param", "bits": 2, "desc": "参数"},
+    {"name": "FlowID", "bits": 8, "desc": "流ID"},
+    {"name": "PayloadLen", "bits": 8, "desc": "载荷长度"}
+  ]
+}

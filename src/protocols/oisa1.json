@@ -1,0 +1,28 @@
+{
+  "id": "oisa1",
+  "name": "OISA 1.0",
+  "label": "OISA 1.0",
+  "desc": "OISA 1.0 协议报文格式",
+  "hex": "A0100800FFFFFFF111111FFFFFFFFFFFFFFFFFF",
+  "schema": [
+  {"name": "Valid", "bits": 1, "desc": "有效位"},
+  {"name": "Version", "bits": 3, "desc": "版本号"},
+  {"name": "VC", "bits": 3, "desc": "虚拟通道"},
+  {"name": "RSV_0", "bits": 2, "desc": "保留字段0"},
+  {"name": "Format", "bits": 3, "desc": "报文格式"},
+  {"name": "Packet Type", "bits": 5, "desc": "包类型"},
+  {"name": "RSV_1", "bits": 3, "desc": "保留字段1"},
+  {"name": "Length", "bits": 12, "desc": "载荷长度"},
+  {"name": "Completion Status", "bits": 4, "desc": "完成状态"},
+  {"name": "Hash Value", "bits": 4, "desc": "哈希值"},
+  {"name": "XINA ID", "bits": 4, "desc": "XINA ID"},
+  {"name": "group ID", "bits": 4, "desc": "组ID"},
+  {"name": "TAG", "bits": 16, "desc": "标签"},
+  {"name": "Destination ID", "bits": 16, "desc": "目的ID"},
+  {"name": "Source ID", "bits": 16, "desc": "源ID"},
+  {"name": "Ether Type", "bits": 16, "desc": "以太网类型"},
+  {"name": "Address High", "bits": 16, "desc": "地址高位[47:32]"},
+  {"name": "Address Low", "bits": 32, "desc": "地址低位[31:0]"},
+  {"name": "INC header", "bits": 32, "desc": "INC头部"}
+  ]
+}

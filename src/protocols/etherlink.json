@@ -1,0 +1,23 @@
+{
+  "id": "etherlink",
+  "name": "EtherLink",
+  "label": "EtherLink",
+  "desc": "EtherLink 协议报文格式",
+  "hex": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "schema": [
+    {"name": "DestId", "bits": 16, "desc": "目的ID"},
+    {"name": "Hash", "bits": 16, "desc": "哈希值"},
+    {"name": "RSV_0", "bits": 10, "desc": "保留字段0"},
+    {"name": "PackNum", "bits": 6, "desc": "包序号"},
+    {"name": "SrcId", "bits": 16, "desc": "源ID"},
+    {"name": "RSV_1", "bits": 8, "desc": "保留字段1"},
+    {"name": "FmtType", "bits": 8, "desc": "格式类型"},
+    {"name": "Length", "bits": 16, "desc": "长度"},
+    {"name": "EtherType", "bits": 16, "desc": "以太网类型 (ETHX)"},
+    {"name": "RSV_2", "bits": 4, "desc": "保留字段2"},
+    {"name": "TTL", "bits": 4, "desc": "生存时间 (Time To Live)"},
+    {"name": "DSCP", "bits": 6, "desc": "差分服务代码点"},
+    {"name": "ECN", "bits": 2, "desc": "显式拥塞通知"},
+    {"name": "Payload", "bits": 32, "desc": "载荷"}
+  ]
+}

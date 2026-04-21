@@ -1,0 +1,33 @@
+{
+  "id": "oisa2",
+  "name": "OISA 2.0",
+  "label": "OISA 2.0",
+  "desc": "OISA 2.0 协议报文格式",
+  "hex": "E0404010000000000000000000000000000000000000000000000000",
+  "schema": [
+    {"name": "Version", "bits": 3, "desc": "版本号"},
+    {"name": "VC", "bits": 3, "desc": "虚拟通道"},
+    {"name": "RSV", "bits": 2, "desc": "保留字段0"},
+    {"name": "Format", "bits": 3, "desc": "报文格式"},
+    {"name": "Packet Type", "bits": 5, "desc": "包类型"},
+    {"name": "RSV_1", "bits": 4, "desc": "保留字段1"},
+    {"name": "Length", "bits": 12, "desc": "载荷长度"},
+    {"name": "status", "bits": 3, "desc": "状态"},
+    {"name": "RSV_2", "bits": 13, "desc": "保留字段2"},
+    {"name": "Tag", "bits": 16, "desc": "标签"},
+    {"name": "Entropy", "bits": 8, "desc": "熵值"},
+    {"name": "Destination ID", "bits": 8, "desc": "目的ID"},
+    {"name": "PacketingNum", "bits": 8, "desc": "组包序号"},
+    {"name": "Source ID", "bits": 8, "desc": "源ID"},
+    {"name": "Protocol Type", "bits": 16, "desc": "协议类型"},
+    {"name": "Type", "bits": 4, "desc": "子类型"},
+    {"name": "R", "bits": 2, "desc": "标志位R"},
+    {"name": "Signal Value", "bits": 10, "desc": "信号值"},
+    {"name": "Memory Address High", "bits": 32, "desc": "内存地址[63:32]"},
+    {"name": "Memory Address Low", "bits": 32, "desc": "内存地址[31:0]"},
+    {"name": "INC Group ID", "bits": 16, "desc": "INC组ID"},
+    {"name": "RSV_3", "bits": 8, "desc": "保留字段3"},
+    {"name": "Data Type", "bits": 4, "desc": "数据类型"},
+    {"name": "OpType", "bits": 4, "desc": "操作类型"}
+  ]
+}
