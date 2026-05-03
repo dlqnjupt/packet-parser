@@ -431,11 +431,17 @@ export default function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  const protocolHexCache = useRef<Record<string, string>>({});
+
   const handleProtocolChange = (id: string) => {
+    if (activeProtocol && id !== activeProtocol) {
+      protocolHexCache.current[activeProtocol] = hexInput;
+    }
     const proto = protocols.find(p => p.id === id);
     if (!proto) return;
     setActiveProtocol(id);
-    setHexInput(proto.hex);
+    const cachedHex = protocolHexCache.current[id];
+    setHexInput(cachedHex || proto.hex);
     const fullJson = {
       id: proto.id,
       name: proto.name,
@@ -553,10 +559,163 @@ export default function App() {
     }
   }, [parsedData, hexInput, activeProtocol]);
 
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [matchCount, setMatchCount] = useState(0);
+  const [currentMatch, setCurrentMatch] = useState(0);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const doFind = useCallback((query: string, direction: 'next' | 'prev' | 'reset' = 'next') => {
+    if (!query.trim()) {
+      setMatchCount(0);
+      setCurrentMatch(0);
+      return;
+    }
+    const w = window as any;
+    if (direction === 'reset') {
+      setCurrentMatch(1);
+      w.find('', false, false, true);
+      const found = w.find(query, false, false, true, true, false, true);
+      setMatchCount(found ? 0 : 0);
+      return;
+    }
+    const found = w.find(query, direction === 'prev', false, false, false, false, false);
+    if (!found) {
+      if (direction === 'next') {
+        w.find(query, false, false, true, true, false, true);
+        w.find(query, false, false, false, false, false, false);
+        setCurrentMatch(1);
+      } else {
+        w.find(query, true, false, true, true, false, true);
+        w.find(query, true, false, false, false, false, false);
+        setCurrentMatch(matchCount || 1);
+      }
+    } else {
+      setCurrentMatch(c => Math.max(1, direction === 'next' ? c + 1 : c - 1));
+    }
+  }, [matchCount]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      if (e.key === 'Escape') {
+        if (searchOpen) {
+          e.preventDefault();
+          setSearchOpen(false);
+          setSearchQuery('');
+          setMatchCount(0);
+          setCurrentMatch(0);
+          window.getSelection()?.removeAllRanges();
+          (window as any).find('', false, false, true);
+        }
+      }
+      if (e.key === 'F3' && searchOpen && searchQuery) {
+        e.preventDefault();
+        doFind(searchQuery, e.shiftKey ? 'prev' : 'next');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchOpen, searchQuery, doFind]);
+
   const totalSchemaBits = parsedData.results.reduce((sum, f) => sum + f.bits, 0);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+      {searchOpen && (
+        <div style={{
+          position: 'fixed',
+          top: '16px',
+          right: '24px',
+          zIndex: 9999,
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: '10px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
+          padding: '8px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}>
+          <input
+            ref={searchInputRef}
+            autoFocus
+            value={searchQuery}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearchQuery(val);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (!searchQuery.trim()) return;
+                doFind(searchQuery, e.shiftKey ? 'prev' : (matchCount > 0 && currentMatch > 0 ? 'next' : 'reset'));
+              }
+              if (e.key === 'Escape') {
+                setSearchOpen(false);
+                setSearchQuery('');
+                setMatchCount(0);
+                setCurrentMatch(0);
+                window.getSelection()?.removeAllRanges();
+                (window as any).find('', false, false, true);
+              }
+            }}
+            placeholder="在页面中查找..."
+            style={{
+              width: '220px',
+              background: 'var(--bg-input)',
+              border: '1px solid var(--border)',
+              borderRadius: '6px',
+              padding: '7px 12px',
+              color: 'var(--text-primary)',
+              fontSize: '13px',
+              fontFamily: '"Inter", sans-serif',
+              outline: 'none',
+            }}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <button
+              onClick={() => doFind(searchQuery, 'prev')}
+              disabled={!searchQuery.trim()}
+              style={{
+                width: '28px', height: '28px',
+                border: '1px solid var(--border)', borderRadius: '6px',
+                background: 'var(--bg-input)',
+                color: searchQuery.trim() ? 'var(--text-secondary)' : 'var(--text-muted)',
+                cursor: searchQuery.trim() ? 'pointer' : 'not-allowed',
+                fontSize: '14px', fontWeight: 600,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.15s',
+              }}
+            >▲</button>
+            <button
+              onClick={() => doFind(searchQuery, 'next')}
+              disabled={!searchQuery.trim()}
+              style={{
+                width: '28px', height: '28px',
+                border: '1px solid var(--border)', borderRadius: '6px',
+                background: 'var(--bg-input)',
+                color: searchQuery.trim() ? 'var(--text-secondary)' : 'var(--text-muted)',
+                cursor: searchQuery.trim() ? 'pointer' : 'not-allowed',
+                fontSize: '14px', fontWeight: 600,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.15s',
+              }}
+            >▼</button>
+          </div>
+          {searchQuery.trim() && (
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', fontFamily: '"JetBrains Mono", monospace', minWidth: '48px', textAlign: 'center' }}>
+              {currentMatch} / {matchCount || '?'}
+            </span>
+          )}
+          <button onClick={() => { setSearchOpen(false); setSearchQuery(''); setMatchCount(0); setCurrentMatch(0); window.getSelection()?.removeAllRanges(); (window as any).find('', false, false, true); }} style={{
+            background: 'transparent', border: 'none', color: 'var(--text-muted)',
+            cursor: 'pointer', fontSize: '16px', lineHeight: 1, padding: '2px 4px',
+          }}>✕</button>
+        </div>
+      )}
       <header style={{
         background: 'var(--header-gradient)',
         borderBottom: '1px solid var(--border)',
